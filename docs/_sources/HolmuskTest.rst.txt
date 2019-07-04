@@ -1,0 +1,7 @@
+HolmuskTest module
+==================
+
+.. automodule:: HolmuskTest
+   :members:
+   :undoc-members:
+   :show-inheritance:
