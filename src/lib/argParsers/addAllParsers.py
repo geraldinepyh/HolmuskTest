@@ -31,7 +31,7 @@ def parsersAdd(logger, parser):
     '''
 
     parser = cf.addParsers(parser)
-    parser = m2.addParsers(parser)
+    parser = m2.addParsers(parser) # module 2 parser 
 
     return parser
 

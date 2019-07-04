@@ -28,6 +28,7 @@ def addParsers(logger, parser):
         appended
     '''
     
+    # this will turn up when you do python3 HolmuskTest.py --help
     parser.add_argument("--module2_value1", 
         type = int,
         help = "description here")
