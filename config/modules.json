@@ -14,8 +14,16 @@
     }, {
         "moduleName" : "module2",
         "path"       : "modules/module2/module2.py",
-        "execute"    : true,
+        "execute"    : false,
         "description": "created for tutorial",
         "owner"      : ""
+    }, {
+        "moduleName" : "loadData",
+        "path"       : "modules/demographics/LoadData.py",
+        "execute"    : true,
+        "description": "Tutorial to generate Demographics from Mindlinc database - loads data",
+        "owner"      : ""
     }
+
+
 ]

@@ -1,0 +1,16 @@
+{
+	 "saveData" : {
+
+        "schema"         : "raw_data",
+        "table"          : "background",
+        "saveFolder"     : "../data/raw_data/"
+        
+    },
+
+	"forTraining" : {
+
+        "somevariable"         : "somevalue"
+    }
+
+
+}

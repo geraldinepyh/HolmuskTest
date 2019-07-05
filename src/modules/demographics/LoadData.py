@@ -1,5 +1,6 @@
 from logs import logDecorator as lD 
 import jsonref, pprint
+import os
 
 from lib.databaseIO import pgIO 
 from psycopg2 import sql
@@ -29,19 +30,25 @@ def LoadData(logger, argParam):
         print('hi')
         jsonConfig = jsonref.load(open('../config/modules/loadData.json'))
         print('hEre I am.')
+        schema = jsonConfig['saveData']['schema']
+        table = jsonConfig['saveData']['table']
+        saveFolder = jsonConfig['saveData']['saveFolder']
+        
         query = sql.SQL('''
-            SELECT patientid, religion
-            FROM rwe_version1_1.background
-            -- WHERE religion = 'Other'
-            LIMIT 20
-            ''') #.format(schema =Identifier(), table=Identifier(), var1 = Literal())
+                        SELECT *
+                        FROM {schema}.{table}
+                        ''').format(schema  = sql.Identifier(schema), 
+                                    table   = sql.Identifier(table))
 
         data = pgIO.getAllData(query)
 
         # Check that the data is properly loaded
         print("-" * 10)
-        print("The shape of the data is: ")
-        print(data)
+        
+
+        data = np.array(data)
+        # Save the data to the /data/raw folder
+        np.save( os.path.join(saveFolder, 'raw_data.npy'), data)
 
         return data
 
