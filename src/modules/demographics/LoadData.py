@@ -9,11 +9,9 @@ import pandas as pd
 
 config = jsonref.load(open('../config/config.json'))
 logBase = config['logging']['logBase'] + '.modules.demographics.LoadData'
-makeConnection = jsonref.load(open('../config/db.json'))
-
 
 @lD.log(logBase + '.LoadData')
-def LoadData(logger, argParam):
+def LoadData(logger):
     '''download data
 
     This function makes a connection, downloads the data from the database. 
@@ -24,16 +22,15 @@ def LoadData(logger, argParam):
         The logger used for logging error information
     '''
 
-    print('We are in LoadData module.')
+    print('In LoadData module.')
 
     try:
-        print('hi')
         jsonConfig = jsonref.load(open('../config/modules/loadData.json'))
-        print('hEre I am.')
         schema = jsonConfig['saveData']['schema']
         table = jsonConfig['saveData']['table']
         saveFolder = jsonConfig['saveData']['saveFolder']
         
+        print("Starting Query now.")
         query = sql.SQL('''
                         SELECT *
                         FROM {schema}.{table}
@@ -42,13 +39,10 @@ def LoadData(logger, argParam):
 
         data = pgIO.getAllData(query)
 
-        # Check that the data is properly loaded
-        print("-" * 10)
-        
-
+        print("-" * 5, "Saving Data Now","-" * 5)
         data = np.array(data)
-        # Save the data to the /data/raw folder
         np.save( os.path.join(saveFolder, 'raw_data.npy'), data)
+        print(data.shape)
 
         return data
 
@@ -74,7 +68,7 @@ def main(logger, resultsDict):
         overwriting command line arguments as needed.
     '''
 
-    LoadData(resultsDict['module2'])
+    LoadData()
 
     print('Getting out of LoadData')
     print('-'*30)
