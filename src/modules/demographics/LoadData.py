@@ -37,7 +37,6 @@ def LoadData(logger):
                         FROM {schema}.{table}
                         ''').format(schema  = sql.Identifier(schema), 
                                     table   = sql.Identifier(table))
-
         data = pgIO.getAllData(query)
 
         print("-" * 5, "Saving Data Now","-" * 5)

@@ -72,7 +72,7 @@ def getData(logger):
         plt.title("Bar Charts of Top 5 Marital Status")
         plt.xlabel('Frequency')
         plt.ylabel('Marital Status')        
-        plt.savefig('../results/plots/marital_status_top5.png', bbox_inches='tight') # save image
+        plt.savefig('../notebooks/plots/marital_status_top5.png', bbox_inches='tight') # save image
 
         ## income plot        
         income_col = data[:,colnames.index('income')]
@@ -82,14 +82,17 @@ def getData(logger):
         sel = vmatch(income_col) 
         income_ints = income_col[sel].astype(int) # convert to int
         income_filtered = income_ints[(income_ints >= 1000) & (income_ints <100000)]
-       
+        
+        fig, ax = plt.subplots(1,1)
+        xticks = np.linspace(0,100000,21)
+        ax.set_xticklabels(xticks)
         plt.hist(income_filtered, bins=20)
         plt.title("Histogram of Income levels")
         plt.xlabel('Frequency')
         plt.ylabel('Income')
         plt.ylim([0,25000])
         plt.tight_layout()
-        plt.savefig('../results/plots/income_hist.png', bbox_inches='tight') # save image
+        plt.savefig('../notebooks/plots/income_hist.png', bbox_inches='tight') # save image
         
         return data
 
