@@ -7,9 +7,9 @@
         
     },
 
-	"forTraining" : {
+	"reporting" : {
 
-        "somevariable"         : "somevalue"
+        "filename"         : "raw_data.npy"
     }
 
 

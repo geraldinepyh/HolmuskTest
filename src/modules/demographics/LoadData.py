@@ -14,7 +14,8 @@ logBase = config['logging']['logBase'] + '.modules.demographics.LoadData'
 def LoadData(logger):
     '''download data
 
-    This function makes a connection, downloads the data from the database. 
+    This function makes a connection, downloads the data from the database.
+    Then saves it to the raw data folder. 
     
     Parameters
     ----------

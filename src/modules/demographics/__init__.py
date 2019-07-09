@@ -1,4 +1,4 @@
-'''[one line description of the module]
+'''For loading and reporting the Demographics of Sample Mindlinc data
 
 [this is a 
 multiline description of what the module does.] 

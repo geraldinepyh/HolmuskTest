@@ -20,8 +20,14 @@
     }, {
         "moduleName" : "loadData",
         "path"       : "modules/demographics/LoadData.py",
-        "execute"    : true,
+        "execute"    : false,
         "description": "Tutorial to generate Demographics from Mindlinc database - loads data",
+        "owner"      : ""
+    }, {
+        "moduleName" : "getData",
+        "path"       : "modules/demographics/getData.py",
+        "execute"    : true,
+        "description": "Tutorial to generate Demographics from Mindlinc database - reports data",
         "owner"      : ""
     }
 
