@@ -134,7 +134,6 @@ def getHeader(logger):
     except Exception as e: 
         logger.error(f'Unable to run getHeader \n {e}')
 
-
 @lD.log(logBase + '.main')
 def main(logger, resultsDict):
     '''main function for module2
