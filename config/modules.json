@@ -24,10 +24,10 @@
         "description": "Tutorial to generate Demographics from Mindlinc database - loads data",
         "owner"      : ""
     }, {
-        "moduleName" : "getData",
-        "path"       : "modules/demographics/getData.py",
+        "moduleName" : "getFilteredData",
+        "path"       : "modules/paper0/table1.py",
         "execute"    : true,
-        "description": "Tutorial to generate Demographics from Mindlinc database - reports data",
+        "description": "Pulls Filtered Data for Table1",
         "owner"      : ""
     }
 

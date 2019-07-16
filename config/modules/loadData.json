@@ -1,7 +1,7 @@
 {
 	 "saveData" : {
 
-        "schema"         : "raw_data",
+        "schema"         : "geraldine",
         "table"          : "background",
         "saveFolder"     : "../data/raw_data/"
         
