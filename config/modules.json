@@ -27,7 +27,7 @@
         "moduleName" : "getFilteredData",
         "path"       : "modules/paper0/table1.py",
         "execute"    : true,
-        "description": "Pulls Filtered Data for Table1",
+        "description": "Pulls Filtered Data to generate Table1",
         "owner"      : ""
     }
 
