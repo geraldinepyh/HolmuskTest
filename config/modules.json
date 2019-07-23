@@ -26,10 +26,15 @@
     }, {
         "moduleName" : "getFilteredData",
         "path"       : "modules/paper0/table1.py",
-        "execute"    : true,
+        "execute"    : false,
         "description": "Pulls Filtered Data to generate Table1",
         "owner"      : ""
+    }, {
+        "moduleName" : "createLatex",
+        "path"       : "modules/paper0/createLatex.py",
+        "execute"    : true,
+        "description": "Creating a Latex report",
+        "owner"      : ""
     }
-
 
 ]

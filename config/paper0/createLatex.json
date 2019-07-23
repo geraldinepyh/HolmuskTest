@@ -1,0 +1,18 @@
+{
+	"query" : {
+		"schema" : "geraldine",
+		"table" : "background"
+	},
+	"Title" : "Insert Title here.",
+    "Section1Title"  : "Section 1 Title",
+    "Section1Text"  : "Section 1 Text",
+    "Sub-Section1Title"  : "Sub-Section 1 Title",
+    "Section2Title"  : "Section 2 Title",
+    "Table1" : {
+        "headers" : ["id","race","sex","siteid"]
+    },
+    "output" : {
+    	"savePath" : "../results/latexFiles/"
+    },
+    "params"  : {}
+}
