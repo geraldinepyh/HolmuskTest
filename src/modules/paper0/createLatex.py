@@ -10,8 +10,8 @@ import pickle
 
 from lib.report import createLatex as lt
 import pylatex
-from pylatex import Document, Section, Subsection, Tabular, MultiColumn, MultiRow, Package, NoEscape
-from tabulate import tabulate 
+from pylatex import Document, Section, Subsection, Tabular, Tabularx, MultiColumn, MultiRow, Package, NoEscape, Command
+from matrix2latex import matrix2latex
 
 config = jsonref.load(open('../config/config.json'))
 logBase = config['logging']['logBase'] + '.modules.paper0.createLatex'
@@ -23,39 +23,63 @@ def main(logger, resultsDict):
     Testing to generate the latex pdf 
     '''
     try:
-        jsonConfig = jsonref.load(open('../config/paper0/createLatex.json'))
-        fpath = jsonConfig['output']['savePath']
-        doc = Document()
-        doc.packages.append(Package("booktabs")) #to read the \toprule control sequences
-        section = Section("Tables")
-        subsection = Subsection(jsonConfig['Sub-Section1Title'])
-        subsection2 = Subsection("Table1")
+        arxivReport()
+        # jsonConfig = jsonref.load(open('../config/paper0/createLatex.json'))
+        # fpath = jsonConfig['output']['savePath']
+        # doc = Document()
+        # doc.packages.append(Package("booktabs"))
+        # doc.packages.append(Package("amsmath"))
+        # doc.packages.append(Package("caption"))
 
-        # add a testing table
-        data = getData() 
-        columns = ["id","race","sex","siteid"]
-        table0 = lt.generateTable(data, columns) 
-        subsection.append(table0)
+        # section = Section("Tables")
+        # tablesection = Subsection("Tables")
 
-        subsection.append("\n The above is a testing table for a simple query.")
+        # table1 = jsonConfig["input"]["table1"]
+        # # Add from lib
+        # lt.addTable(doc, table1, "Table1", "This describes the first table.")
 
-        # Table 1 
-        out10 = pickle.load(open("../data/final/jwpickles/out10.pickle", "rb"))
-        subsection2.append(NoEscape(out10.to_latex(multirow=True)))
-        subsection2.append("\n See awesome Table~\ref{tab:out10}.")
+        # # Build the Section
+        # section.append(tablesection)
 
-        section.append(subsection)
-        section.append(subsection2)
-
-        # Build the document
-        doc.append(section)
-        doc.generate_tex(fpath+"test_output") # from pylatex
-        doc.generate_pdf(fpath+"test_output")
+        # # Build the document
+        # doc.append(section)
+        # doc.generate_tex(fpath+"test_output") # from pylatex
+        # # doc.generate_pdf(fpath+"test_output")
 
         print('-'*10, 'Pdf generated.','-'*10)
         return
     except Exception as e: 
         logger.error(f'Unable to run main \n {e}')
+
+@lD.log(logBase + '.arxivReport')
+def arxivReport(logger):
+    '''
+
+    '''
+    try:
+        jsonConfig = jsonref.load(open('../config/paper0/createLatex.json'))
+        fpath = jsonConfig['output']['savePath']
+        # Configure Document 
+        doc = Document()
+        # Load packages
+        packages = jsonConfig["packages"]
+        for p in packages: doc.packages.append(Package(p))
+        # Preamble 
+        preambles = jsonConfig["preamble"]
+        for pa in preambles:
+            doc.preamble.append(Command(pa, preambles[pa]))
+        doc.append(NoEscape(r"\maketitle"))
+        # Abstract 
+
+        # with doc.create()
+
+
+        # Generate PDF/Tex
+        doc.generate_tex(fpath+"test_arxiv")
+        # doc.generate_pdf('full', clean_tex=False)
+        return
+    except Exception as e: 
+        logger.error(f'Unable to create arxiv report \n {e}')
 
 @lD.log(logBase + '.getData')
 def getData(logger):
