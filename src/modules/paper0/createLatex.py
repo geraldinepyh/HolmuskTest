@@ -23,9 +23,9 @@ def main(logger, resultsDict):
     Testing to generate the latex pdf 
     '''
     try:
-        arxivReport()
-        # jsonConfig = jsonref.load(open('../config/paper0/createLatex.json'))
-        # fpath = jsonConfig['output']['savePath']
+        doc = arxivReport()
+        jsonConfig = jsonref.load(open('../config/paper0/createLatex.json'))
+        fpath = jsonConfig['output']['savePath']
         # doc = Document()
         # doc.packages.append(Package("booktabs"))
         # doc.packages.append(Package("amsmath"))
@@ -34,16 +34,16 @@ def main(logger, resultsDict):
         # section = Section("Tables")
         # tablesection = Subsection("Tables")
 
-        # table1 = jsonConfig["input"]["table1"]
-        # # Add from lib
-        # lt.addTable(doc, table1, "Table1", "This describes the first table.")
+        table1 = jsonConfig["input"]["table1"]
+        # Add from lib
+        lt.addTable(doc, table1, "Table1", "This describes the first table.")
 
         # # Build the Section
         # section.append(tablesection)
 
         # # Build the document
         # doc.append(section)
-        # doc.generate_tex(fpath+"test_output") # from pylatex
+        doc.generate_tex(fpath+"test_arxiv")
         # # doc.generate_pdf(fpath+"test_output")
 
         print('-'*10, 'Pdf generated.','-'*10)
@@ -70,14 +70,18 @@ def arxivReport(logger):
             doc.preamble.append(Command(pa, preambles[pa]))
         doc.append(NoEscape(r"\maketitle"))
         # Abstract 
-
+        doc.append(NoEscape(r"\begin{abstract}"))
+        doc.append(jsonConfig["abstract"])
+        doc.append(NoEscape(r"\end{abstract}"))
         # with doc.create()
 
-
+        # Look for tables/figures and \noindent them
+        
+        
         # Generate PDF/Tex
-        doc.generate_tex(fpath+"test_arxiv")
+        # doc.generate_tex(fpath+"test_arxiv")
         # doc.generate_pdf('full', clean_tex=False)
-        return
+        return doc
     except Exception as e: 
         logger.error(f'Unable to create arxiv report \n {e}')
 

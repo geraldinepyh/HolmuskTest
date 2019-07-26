@@ -1,7 +1,7 @@
 from logs import logDecorator as lD
 import jsonref
 import pylatex
-from pylatex import Document, Section, Subsection, Tabular, MultiColumn, MultiRow, NoEscape
+from pylatex import Document, Section, Subsection, Tabular,  Tabularx, MultiColumn, MultiRow, NoEscape
 import scipy
 from tabulate import tabulate  
 import pickle
@@ -48,6 +48,7 @@ def addTable(logger, doc, table, title, caption):
             dfs.append(data)
         mergedtable = pd.concat(dfs, axis=1, keys=table.keys(), sort=False)
         mergedtable.fillna(0, inplace=True)
+        mergedtable
         doc.append(NoEscape(r"\setlength{\tabcolsep}{2pt}")) # Compress the table horizontally.
         doc.append(NoEscape(mergedtable.to_latex(multirow=True, float_format="%0.0f")))
         doc.append(caption)
@@ -57,6 +58,10 @@ def addTable(logger, doc, table, title, caption):
         #     caption="Testing merged PD DF", 
         #     label="pd_data_frame", 
         #     headerRow=list(table1.keys()))))
+
+        ## using tabularx
+        # with doc.create(Tabularx(createHeaderString(len(mergedtable.columns)+1), width_argument=NoEscape(r"0.9\textwidth"))) as tblx:
+            # tblx.append(NoEscape(mergedtable.to_latex(multirow=True, float_format="%0.0f")))
         
         return 
 
