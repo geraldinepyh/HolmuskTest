@@ -23,38 +23,61 @@ def main(logger, resultsDict):
     Testing to generate the latex pdf 
     '''
     try:
-        doc = arxivReport()
+        # doc = arxivReport() # generates entire
+        
         jsonConfig = jsonref.load(open('../config/paper0/createLatex.json'))
-        fpath = jsonConfig['output']['savePath']
-        # doc = Document()
-        # doc.packages.append(Package("booktabs"))
-        # doc.packages.append(Package("amsmath"))
-        # doc.packages.append(Package("caption"))
+        table1 = jsonConfig["tables"]["table1"]["files"]
+        # Creates Tables
+        lt.saveTable(table = table1, fname = "table2sample")
+        # Creates PDF Document
+        stringLatex()
 
-        # section = Section("Tables")
-        # tablesection = Subsection("Tables")
-
-        table1 = jsonConfig["input"]["table1"]
-        # Add from lib
-        lt.addTable(doc, table1, "Table1", "This describes the first table.")
-
-        # # Build the Section
-        # section.append(tablesection)
-
-        # # Build the document
-        # doc.append(section)
-        doc.generate_tex(fpath+"test_arxiv")
-        # # doc.generate_pdf(fpath+"test_output")
-
-        print('-'*10, 'Pdf generated.','-'*10)
         return
     except Exception as e: 
         logger.error(f'Unable to run main \n {e}')
 
+@lD.log(logBase + '.stringLatex')
+def stringLatex(logger):
+    '''
+    String pieces of latex together to form a report. 
+    Assumes Latex have already been written to the same output location.
+    '''
+    try:
+        jsonConfig = jsonref.load(open('../config/paper0/createLatex.json'))
+        fpath = jsonConfig['output']['savePath']
+        texfiles = jsonConfig['input']['texfilespath']
+
+        # # Configure Document 
+        doc = Document()
+        packages = jsonConfig["packages"]
+        for p in packages: doc.packages.append(Package(p))
+        preambles = jsonConfig["preamble"]
+        # Add Title/Authors
+        for pa in preambles:
+            doc.preamble.append(Command(pa, preambles[pa]))
+        doc.append(NoEscape(r"\maketitle"))
+        # Abstract          
+        doc.append(NoEscape(r"\begin{abstract}"))
+        doc.append(jsonConfig["abstract"])
+        doc.append(NoEscape(r"\end{abstract}"))
+
+        # # # String pieces
+        doc.append(NoEscape(r"\input{sampleoutput}")) 
+        # different file path because of where pdflatex is called to compile
+
+        # # Build the document
+        doc.generate_tex(fpath+"stringedPieces")
+
+        return doc
+    except Exception as e: 
+        logger.error(f'Unable to run stringLatex \n {e}')
+
 @lD.log(logBase + '.arxivReport')
 def arxivReport(logger):
     '''
-
+    creates an arxiv-style latex report programmatically 
+    based on input specified from the createLatex jsonConfig file
+    Generates tables from scratch instead of reading from a file.
     '''
     try:
         jsonConfig = jsonref.load(open('../config/paper0/createLatex.json'))
@@ -73,20 +96,27 @@ def arxivReport(logger):
         doc.append(NoEscape(r"\begin{abstract}"))
         doc.append(jsonConfig["abstract"])
         doc.append(NoEscape(r"\end{abstract}"))
-        # with doc.create()
+        
+        # Add sections 
+        lt.addSections(doc, [1, 2])
 
-        # Look for tables/figures and \noindent them
-        
-        
-        # Generate PDF/Tex
-        # doc.generate_tex(fpath+"test_arxiv")
-        # doc.generate_pdf('full', clean_tex=False)
+        # Tables
+        table1 = jsonConfig["input"]["table1"]
+        lt.addTable(doc, table1)
+
+
+
+        # # Build the document
+        doc.generate_tex(fpath+"test_arxiv")
+        # # doc.generate_pdf(fpath+"test_output")
+
         return doc
     except Exception as e: 
         logger.error(f'Unable to create arxiv report \n {e}')
 
-@lD.log(logBase + '.getData')
-def getData(logger):
+# To Remove? 
+@lD.log(logBase + '.getDataFromSQL')
+def getDataFromSQL(logger):
     '''download data
 
     This function makes a connection, downloads the data from the database.
@@ -98,7 +128,7 @@ def getData(logger):
         The logger used for logging error information
     '''
 
-    print('In getData module.')
+    print('In getDataFromSQL module.')
 
     try:
         jsonConfig = jsonref.load(open('../config/paper0/createLatex.json'))
@@ -119,5 +149,5 @@ def getData(logger):
         return data
 
     except Exception as e: 
-        logger.error(f'Unable to run getData \n {e}')
+        logger.error(f'Unable to run getDataFromSQL \n {e}')
 

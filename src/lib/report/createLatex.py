@@ -11,25 +11,36 @@ import pandas as pd
 config = jsonref.load(open('../config/config.json'))
 logBase = config['logging']['logBase'] + '.lib.report.createLatex'
 
-# generateTEX and addSection might not be necessary since pylatex already does it. 
-@lD.log(logBase + '.generateTEX')
-def generateTEX(logger, fpath):
-    '''
-    To generate the document in a TEX format
-    '''
-    try:
-        doc = Document()
-        doc.generate_tex(fpath)     
-        return
-    except Exception as e: 
-        logger.error(f'Unable to generate the Tex. \n {e}')
+# generateTEX and addSections might not be necessary since pylatex already does it. 
 
-@lD.log(logBase + '.addSection')
-def addSection(logger, doc, title, text):
+@lD.log(logBase + '.addSections')
+def addSections(logger, doc, num):
+    """
+    Adds the required sections from the associated jsonConfig file
+    as listed in the 'num' argument. 
+    
+    Args:
+        logger (TYPE): Description
+        doc (LaTeX document): a latex document to write to
+        num (LIST): A list of numbers specifying which sections 
+        to write
+    
+    Returns:
+        TYPE: Description
+    """
     try:
-        # Create a section
-        with doc.create(Section(title)):
-            doc.append(text)
+        jsonConfig = jsonref.load(open('../config/paper0/createLatex.json'))
+        if type(num) is not list: num = [num]
+        sections = jsonConfig["sections"]
+        for n in num:
+            section = sections["section" + str(n)]
+            print("Now writing section" + str(n))
+           
+            with doc.create(Section(section["title"])):
+                # doc.append(NoEscape(section["text"]))
+                doc.append(NoEscape(r"\lipsum[1-5]")) # For testing
+                # if there are subsections, recurse? 
+
         return 
 
     except Exception as e: 
@@ -37,21 +48,24 @@ def addSection(logger, doc, title, text):
 
 
 @lD.log(logBase + '.addTable')
-def addTable(logger, doc, table, title, caption):
+def addTable(logger, doc, table):
     try:    
         jsonConfig = jsonref.load(open('../config/paper0/createLatex.json'))
         dfs = [] # for merging multiple tables
         for k in table.keys():
+            print(k)
             tbl = table[k]
             print("Now loading {}.".format(tbl))
             data = pickle.load(open("{}{}.{}".format(jsonConfig["input"]["filepath"],tbl,jsonConfig["input"]["fileformat"]), "rb"))
             dfs.append(data)
         mergedtable = pd.concat(dfs, axis=1, keys=table.keys(), sort=False)
         mergedtable.fillna(0, inplace=True)
-        mergedtable
+        # mergedtable
         doc.append(NoEscape(r"\setlength{\tabcolsep}{2pt}")) # Compress the table horizontally.
+
+
+        ## Using pandas to_latex
         doc.append(NoEscape(mergedtable.to_latex(multirow=True, float_format="%0.0f")))
-        doc.append(caption)
 
         ## using matrix2latex()         
         # tablesection.append(NoEscape(matrix2latex(mergedtable, 
@@ -68,6 +82,26 @@ def addTable(logger, doc, table, title, caption):
     except Exception as e: 
         logger.error(f'Unable to add a table. \n {e}')
 
+@lD.log(logBase + '.saveTable')
+def saveTable(logger, table, fname = None):
+    try:    
+        jsonConfig = jsonref.load(open('../config/paper0/createLatex.json'))
+        if fname == None: fname = jsonConfig['input']['texfilespath'] + "sampleoutput"
+        dfs = [] # for merging multiple tables
+        for k in table.keys():
+            tbl = table[k]
+            print("Now loading {}.".format(tbl))
+            data = pickle.load(open("{}{}.{}".format(jsonConfig["input"]["filepath"],tbl,jsonConfig["input"]["fileformat"]), "rb"))
+            dfs.append(data)
+        mergedtable = pd.concat(dfs, axis=1, keys=table.keys(), sort=False)
+        mergedtable.fillna(0, inplace=True)
+        with open(fname + '.tex','w') as tf:
+            tf.write(mergedtable.to_latex(multirow=True, float_format="%0.0f"))
+        # doc.append(NoEscape(r"\setlength{\tabcolsep}{2pt}")) # Compress the table horizontally.
+        return 
+
+    except Exception as e: 
+        logger.error(f'Unable to save a table. \n {e}')
 
 
 @lD.log(logBase + '.generateTableFromNP')
