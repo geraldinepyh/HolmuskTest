@@ -3,10 +3,10 @@ import jsonref
 import pylatex
 from pylatex import Document, Section, Subsection, Tabular,  Tabularx, MultiColumn, MultiRow, NoEscape
 import scipy
-from tabulate import tabulate  
 import pickle
 import numpy as np
 import pandas as pd
+import os
 
 config = jsonref.load(open('../config/config.json'))
 logBase = config['logging']['logBase'] + '.lib.report.createLatex'
@@ -40,68 +40,64 @@ def addSections(logger, doc, num):
                 # doc.append(NoEscape(section["text"]))
                 doc.append(NoEscape(r"\lipsum[1-5]")) # For testing
                 # if there are subsections, recurse? 
-
         return 
 
     except Exception as e: 
         logger.error(f'Unable to add a section. \n {e}')
 
 
-@lD.log(logBase + '.addTable')
-def addTable(logger, doc, table):
-    try:    
-        jsonConfig = jsonref.load(open('../config/paper0/createLatex.json'))
-        dfs = [] # for merging multiple tables
-        for k in table.keys():
-            print(k)
-            tbl = table[k]
-            print("Now loading {}.".format(tbl))
-            data = pickle.load(open("{}{}.{}".format(jsonConfig["input"]["filepath"],tbl,jsonConfig["input"]["fileformat"]), "rb"))
-            dfs.append(data)
-        mergedtable = pd.concat(dfs, axis=1, keys=table.keys(), sort=False)
-        mergedtable.fillna(0, inplace=True)
-        # mergedtable
-        doc.append(NoEscape(r"\setlength{\tabcolsep}{2pt}")) # Compress the table horizontally.
-
-
-        ## Using pandas to_latex
-        doc.append(NoEscape(mergedtable.to_latex(multirow=True, float_format="%0.0f")))
-
-        ## using matrix2latex()         
-        # tablesection.append(NoEscape(matrix2latex(mergedtable, 
-        #     caption="Testing merged PD DF", 
-        #     label="pd_data_frame", 
-        #     headerRow=list(table1.keys()))))
-
-        ## using tabularx
-        # with doc.create(Tabularx(createHeaderString(len(mergedtable.columns)+1), width_argument=NoEscape(r"0.9\textwidth"))) as tblx:
-            # tblx.append(NoEscape(mergedtable.to_latex(multirow=True, float_format="%0.0f")))
-        
-        return 
-
-    except Exception as e: 
-        logger.error(f'Unable to add a table. \n {e}')
-
 @lD.log(logBase + '.saveTable')
 def saveTable(logger, table, fname = None):
+    """
+    Args:
+        logger (TYPE): Description
+        table (TYPE): Description
+        fname (None, optional): save file name
+    
+    Returns:
+        TYPE: Description
+    """
     try:    
         jsonConfig = jsonref.load(open('../config/paper0/createLatex.json'))
-        if fname == None: fname = jsonConfig['input']['texfilespath'] + "sampleoutput"
+        # if fname == None: fname = jsonConfig["input"]["texfilespath"] + "sampleoutput"
+
         dfs = [] # for merging multiple tables
+        dlen = [] # for tracking number of columns for each merged table and adding a cmidrule
         for k in table.keys():
             tbl = table[k]
             print("Now loading {}.".format(tbl))
-            data = pickle.load(open("{}{}.{}".format(jsonConfig["input"]["filepath"],tbl,jsonConfig["input"]["fileformat"]), "rb"))
+            loadfile = "{}{}.{}".format(jsonConfig["input"]["filepath"],
+                                        tbl,
+                                        jsonConfig["input"]["fileformat"])
+            data = pickle.load(open(loadfile, "rb"))
+            dlen.append(len(data.columns))
             dfs.append(data)
         mergedtable = pd.concat(dfs, axis=1, keys=table.keys(), sort=False)
         mergedtable.fillna(0, inplace=True)
         with open(fname + '.tex','w') as tf:
-            tf.write(mergedtable.to_latex(multirow=True, float_format="%0.0f"))
-        # doc.append(NoEscape(r"\setlength{\tabcolsep}{2pt}")) # Compress the table horizontally.
+            tf.write(r"\centering")
+            tf.write(mergedtable.to_latex(multirow=True, float_format="%0.0f")) #, column_format=r"0.9\textwidth"))
         return 
 
     except Exception as e: 
         logger.error(f'Unable to save a table. \n {e}')
+
+@lD.log(logBase + '.addTable')
+def addTable(logger, doc, fpath, tblno, wideTable=False):
+    try:
+        tblName = "Table {}".format(tblno) 
+        tblPath = os.path.join(r"Paper1/table" + str(tblno))
+        print(tblPath)
+        with doc.create(Subsection(tblName)) as tbl:
+            if wideTable: 
+                tbl.append(NoEscape(r"\setlength{\tabcolsep}{2pt}"))
+                tbl.append(NoEscape(r"\resizebox{\textwidth}{!}{"))
+            tbl.append(NoEscape(r"\input{" + tblPath + r".tex}")) 
+            if wideTable: 
+                tbl.append(NoEscape(r"}"))
+        return 
+    except Exception as e: 
+        logger.error(f'Unable to add the table. \n {e}')
 
 
 @lD.log(logBase + '.generateTableFromNP')
